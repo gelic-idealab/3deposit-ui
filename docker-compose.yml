@@ -1,0 +1,22 @@
+version: '3'
+services:
+      
+  ui:
+    build: .
+    image: 3deposit-ui:latest
+    container_name: 3deposit-ui
+    restart: always
+    labels:
+      - "traefik.frontend.rule=Host:3deposit.library.illinois.edu"
+      - "traefik.backend=3deposit-ui"
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+    env_file:
+      - .env.production
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+

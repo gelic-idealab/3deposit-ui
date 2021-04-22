@@ -4,7 +4,7 @@ import Dashboard from "../pages/Dashboard";
 import Deposits from "../components/Deposits";
 import Deposit from "../pages/Deposit";
 import Upload from "../pages/Upload";
-import Users from "../pages/Users";
+import Admin from "../pages/Admin";
 import Metadata from "../pages/Metadata";
 
 
@@ -40,9 +40,9 @@ const routes = [
         component: Upload,
       },
       {
-        path: "/users",
-        name: "Users",
-        component: Users
+        path: "/admin",
+        name: "Admin",
+        component: Admin
       },
       {
         path: "/metadata",

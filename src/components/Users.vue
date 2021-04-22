@@ -53,7 +53,7 @@
                             <v-col cols="12">
                                 <v-text-field
                                 v-model="editedItem.password"
-                                label="Password"
+                                label="Set Password"
                                 type="password"
                                 ></v-text-field>
                             </v-col>
@@ -146,7 +146,7 @@ export default {
         return {
             data: [],
             headers: [
-                { text: "ID", value: "id" },
+                // { text: "ID", value: "id" },
                 { text: "Email", value: "email" },
                 { text: "First", value: "firstName"},
                 { text: "Last", value: "lastName" },

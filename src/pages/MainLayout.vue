@@ -79,12 +79,12 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item v-if="user.role === `admin`" link @click="redirect('/users')">
+        <v-list-item v-if="user.role === `admin`" link @click="redirect('/admin')">
           <v-list-item-icon>
-            <v-icon>mdi-account-group</v-icon>
+            <v-icon>mdi-cog</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title>Users</v-list-item-title>
+            <v-list-item-title>Admin</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 

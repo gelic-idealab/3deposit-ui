@@ -1,6 +1,6 @@
 <template>
     <v-container fluid>
-        Users      
+        Collections      
         <v-data-table
         :headers="headers"
         :items="data"
@@ -26,7 +26,7 @@
                     v-bind="attrs"
                     v-on="on"
                     >
-                    Add User
+                    Add Collection
                     </v-btn>
                 </template>
                 <v-card>
@@ -44,48 +44,27 @@
                             <v-row>
                             <v-col cols="12">
                                 <v-text-field
-                                v-model="editedItem.email"
-                                label="Email"
+                                v-model="editedItem.name"
+                                label="Name"
                                 required
                                 :rules="rules"
                                 ></v-text-field>
                             </v-col>
                             <v-col cols="12">
-                                <v-text-field
-                                v-model="editedItem.password"
-                                label="Set Password"
-                                type="password"
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="12">
-                                <v-text-field
-                                v-model="editedItem.passwordConfirm"
-                                label="Confirm Password"
-                                type="password"
-                                :rules="passwordRules"
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="12">
-                                <v-text-field
-                                v-model="editedItem.firstName"
-                                label="First Name"
+                                <v-textarea
+                                v-model="editedItem.desc"
+                                label="Description"
                                 required
                                 :rules="rules"
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="12">
-                                <v-text-field
-                                v-model="editedItem.lastName"
-                                label="Last Name"
-                                required
-                                :rules="rules"
-                                ></v-text-field>
+                                ></v-textarea>
                             </v-col>
                             <v-col cols="12">
                                 <v-select
-                                v-model="editedItem.role"
-                                label="Role"
-                                :items="roles"
+                                v-model="editedItem.org"
+                                label="Organization"
+                                :item-text="name"
+                                :item-value="id"
+                                :items="orgs"
                                 required
                                 :rules="rules"
                                 ></v-select>
@@ -137,52 +116,44 @@
 
 <script>
 import { BASE_API_URL } from "../requests/base";
-import sha1 from "sha1";
 
 export default {
-    name: 'Users',
+    name: 'Collections',
 
     data: function() {
         return {
             data: [],
             headers: [
                 { text: "ID", value: "id" },
-                { text: "Email", value: "email" },
-                { text: "First", value: "firstName"},
-                { text: "Last", value: "lastName" },
-                { text: "Role", value: "role" },
-                { text: "Last Login", value: "lastLogin" },
+                { text: "Name", value: "name" },
+                { text: "Description", value: "desc"},
+                { text: "Organization", value: "org" },
                 { text: 'Actions', value: 'actions', sortable: false },
             ],
             dialog: false,
             valid: true,
-            passwordRules: [
-                v => (v === this.editedItem.password) || 'Password does not match.',
-            ],
             rules: [
                 v => !!v || 'Value is required',
             ],
             defaultItem: {},
             editedItem: {
-                email: "",
-                password: "",
-                passwordConfirm: "",
-                firstName: "",
-                lastName: "",
-                role: ""
+                name: "",
+                desc: "",
+                org: ""
             },
             editedIndex: -1,
-            roles: ["admin", "manager", "uploader", "viewer"],
+            orgs: [],
             user: {},
         }
     },
     mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));
         this.getUsers();
+        this.getOrgs();
     },
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'New User' : 'Edit User'
+        return this.editedIndex === -1 ? 'New Collection' : 'Edit Collection'
       },
     },
 
@@ -192,8 +163,8 @@ export default {
       },
     },
     methods: {
-        getUsers() {
-            fetch(BASE_API_URL+'/users', {
+        getCollections() {
+            fetch(BASE_API_URL+'/collections', {
                 method: 'GET',
                 mode: 'cors',
                 headers: {
@@ -212,18 +183,34 @@ export default {
                 }
             });
         },
+        getOrgs() {
+            fetch(BASE_API_URL+'/orgs', {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'X-API-KEY': this.user.token
+                }
+            })
+            .then(async response => {
+                let res = await response.text();
+                if (response.status === 200) {
+                    this.orgs = JSON.parse(res);
+                } else if (response.status === 401) {
+                    localStorage.removeItem('user');
+                    this.$router.push('/login');
+                } else {
+                    console.log(res);
+                }
+            });
+        },
         save() {
             if (this.$refs.form.validate()) {
                 let form = new FormData();
                 for (const [key, value] of Object.entries(this.editedItem)) {
-                    if (key == "password") {
-                        form.append(key, sha1(value));
-                    } else {
-                        form.append(key, value);
-                    }
+                    form.append(key, value);
                 }
 
-                fetch(BASE_API_URL+'/users', {
+                fetch(BASE_API_URL+'/collections', {
                     method: 'POST',
                     mode: 'cors',
                     body: form,
@@ -237,7 +224,7 @@ export default {
                     }                
                     let res = await response.text();
                     console.log(res);
-                    this.getUsers();
+                    this.getCollections();
                 });
             } 
         },
@@ -247,8 +234,8 @@ export default {
             this.dialog = true
         },
         deleteItem (item) {
-            if (confirm('Are you sure you want to delete this user?')) {
-                fetch(BASE_API_URL+'/users?id='+item.id, {
+            if (confirm('Are you sure you want to delete this collection?')) {
+                fetch(BASE_API_URL+'/collections?id='+item.id, {
                     method: 'DELETE',
                     mode: 'cors',
                     headers: {

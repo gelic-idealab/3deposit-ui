@@ -148,7 +148,7 @@ export default {
     },
     mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));
-        this.getUsers();
+        this.getCollections();
         this.getOrgs();
     },
     computed: {
@@ -245,7 +245,7 @@ export default {
                 .then(async response => {
                     let res = await response.text();
                     console.log(res);
-                    this.getUsers();
+                    this.getCollections();
                 });
             }
         },

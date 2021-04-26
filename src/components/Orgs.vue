@@ -6,9 +6,9 @@
         :items="data"
         :sort-by="['id']"
         >
-        <!-- <template v-slot:item.upload_at="{ item }">
-           <span>{{ new Date(item.upload_at*1000).toLocaleString() }}</span>
-         </template> -->
+        <template v-slot:item.owners="{ item }">
+           <span>{{ item.owners.length || 0 }}</span>
+         </template>
         <template v-slot:top>
             <v-toolbar
                 flat
@@ -60,8 +60,9 @@
                             </v-col>
                             <v-col cols="12">
                                 <v-select
-                                v-model="editedItem.owner"
-                                label="Owner"
+                                multiple
+                                v-model="editedItem.owners"
+                                label="Owners"
                                 item-text="email"
                                 item-value="id"
                                 :items="users"
@@ -127,7 +128,7 @@ export default {
                 { text: "ID", value: "id" },
                 { text: "Name", value: "name" },
                 { text: "Description", value: "desc"},
-                { text: "Owner", value: "owner" },
+                { text: "Owners", value: "owners" },
                 { text: 'Actions', value: 'actions', sortable: false },
             ],
             dialog: false,
@@ -139,7 +140,7 @@ export default {
             editedItem: {
                 name: "",
                 desc: "",
-                owner: ""
+                owners: []
             },
             editedIndex: -1,
             users: [],

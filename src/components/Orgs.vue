@@ -246,7 +246,7 @@ export default {
                 .then(async response => {
                     let res = await response.text();
                     console.log(res);
-                    this.getUsers();
+                    this.getOrgs();
                 });
             }
         },

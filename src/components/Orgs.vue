@@ -234,7 +234,7 @@ export default {
             this.editedItem = Object.assign({}, item)
             this.dialog = true
         },
-        deleteItem (item) {
+        deleteItem(item) {
             if (confirm('Are you sure you want to delete this organization?')) {
                 fetch(BASE_API_URL+'/orgs?id='+item.id, {
                     method: 'DELETE',
@@ -250,7 +250,7 @@ export default {
                 });
             }
         },
-        close () {
+        close() {
             this.dialog = false;
             this.$refs.form.resetValidation();
             this.$nextTick(() => {

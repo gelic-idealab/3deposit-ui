@@ -26,21 +26,15 @@
         </v-col>
       </template>
     </v-row>
-
-    <Deposits />
-
   </v-container>
 </template>
 
 <script>
 import { BASE_API_URL } from "../requests/base";
-import Deposits from "../components/Deposits";
 
 export default {
     name: 'Dashboard',
-    components: {
-      Deposits,
-    },
+    components: { },
     data: () => ({
         data: {},
     }),

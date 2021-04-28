@@ -6,9 +6,9 @@
         :items="data"
         :sort-by="['id']"
         >
-        <!-- <template v-slot:item.upload_at="{ item }">
-           <span>{{ new Date(item.upload_at*1000).toLocaleString() }}</span>
-         </template> -->
+        <template v-slot:item.org="{ item }">
+           <span>{{ item.org.name || `None` }}</span>
+         </template>
         <template v-slot:top>
             <v-toolbar
                 flat
@@ -62,8 +62,8 @@
                                 <v-select
                                 v-model="editedItem.org"
                                 label="Organization"
-                                :item-text="name"
-                                :item-value="id"
+                                item-text="name"
+                                item-value="id"
                                 :items="orgs"
                                 required
                                 :rules="rules"

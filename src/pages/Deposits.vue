@@ -41,7 +41,7 @@
 
         <v-divider class="ma-4"></v-divider>
 
-        <v-item-group multiple>
+        <v-item-group mandatory multiple>
             Collections
             <v-row v-if="availableCollections.length">
                 <v-col
@@ -54,15 +54,16 @@
                     <v-card
                     :color="active ? 'accent' : ''"
                     class="d-flex align-center"
-                    height="200"
+                    height="100"
                     @click="toggle"
                     >
                     <v-scroll-y-transition>
                         <div
                         v-if="active"
-                        class="display-3 flex-grow-1 text-center"
+                        class="display-1 flex-grow-1 text-center"
                         >
-                        Active
+                        {{ collection.name }}
+                            <div class="caption text--secondary">{{ collection.desc }}</div>
                         </div>
                     </v-scroll-y-transition>
                     </v-card>
@@ -99,6 +100,7 @@ export default {
     mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));
         this.getOrgs();
+        this.getCollections();
     },
     computed: {},
     methods: {
@@ -114,6 +116,26 @@ export default {
                 let res = await response.text();
                 if (response.status === 200) {
                     this.availableOrgs = JSON.parse(res);
+                } else if (response.status === 401) {
+                    localStorage.removeItem('user');
+                    this.$router.push('/login');
+                } else {
+                    console.log(res);
+                }
+            });
+        },
+        getCollections() {
+            fetch(BASE_API_URL+'/collections', {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'X-API-KEY': this.user.token
+                }
+            })
+            .then(async response => {
+                let res = await response.text();
+                if (response.status === 200) {
+                    this.availableCollections = JSON.parse(res);
                 } else if (response.status === 401) {
                     localStorage.removeItem('user');
                     this.$router.push('/login');

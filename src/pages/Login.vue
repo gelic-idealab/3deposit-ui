@@ -10,37 +10,29 @@
             sm="8"
             md="4"
           >
-            <v-card class="elevation-12">
+            <v-card>
               <v-toolbar
                 color="primary"
                 dark
                 flat
               >
-                <v-toolbar-title>3deposit - Login</v-toolbar-title>
-                <v-spacer></v-spacer>
-                <!-- <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      :href="source"
-                      icon
-                      large
-                      target="_blank"
-                      v-on="on"
-                    >
-                      <v-icon>mdi-code-tags</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Source</span>
-                </v-tooltip> -->
+                <v-toolbar-title>
+                  <div class="body-1">Login to 3deposit</div>
+                </v-toolbar-title>
               </v-toolbar>
                 <v-alert 
                   v-if="error"
                   dense
-                  type="error">
+                  type="error"
+                  class="ma-4">
                   {{ message }}
                 </v-alert>
               <v-card-text>
-                <v-form>
+                <v-form 
+                ref="form"
+                v-model="valid"
+                lazy-validation
+                >
                   <v-text-field
                     name="email"
                     prepend-icon="mdi-email"
@@ -52,13 +44,13 @@
                     @keyup.enter="login"
                     @keypress="error = false"
                   ></v-text-field>
-
                   <v-text-field
                     id="password"
                     label="password"
                     name="password"
                     prepend-icon="mdi-lock"
                     type="password"
+                    :rules="passwordRules"
                     v-model="password"
                     required
                     @keyup.enter="login"
@@ -67,11 +59,12 @@
                 </v-form>
               </v-card-text>
               <v-card-actions>
-                <v-spacer></v-spacer>
                 <v-btn
-                    block 
+                    block
+                    x-large
                     color="primary" 
                     @click="login"
+                    class="mb-2"
                 >Login</v-btn>
               </v-card-actions>
             </v-card>
@@ -95,8 +88,10 @@ export default {
             v => /.+@.+/.test(v) || 'E-mail must be valid',
         ],
         password: '',
+        passwordRules: [v => !!v || 'Password is required'],
         error: false,
-        message: ""
+        message: "",
+        valid: false
     }),
     mounted() {
       // check if user is already logged in
@@ -108,6 +103,7 @@ export default {
     },
     methods: {
         login() {
+          if (this.$refs.form.validate()) {
             this.error = false;
             let form = new FormData();
             form.append('email', this.email);
@@ -130,6 +126,7 @@ export default {
                     this.message = await response.text();
                 }
             });
+          }
         }
     }
 }

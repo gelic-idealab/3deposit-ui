@@ -2,7 +2,8 @@
     <v-container fluid>
         <v-item-group
         v-model="selectedOrg"
-        mandatory>
+        mandatory
+        >
             Organization
             <v-row>
                 <v-col
@@ -19,15 +20,15 @@
                     <v-scroll-y-transition>
                         <div
                         v-if="active"
-                        class="display-1 flex-grow-1 text-center ma-4"
+                        class="display-1 flex-grow-1 text-center font-weight-light white--text ma-4"
                         >
                         {{ org.name }}
-                            <div class="caption text--secondary">{{ org.desc }}</div>
+                            <div class="caption font-weight-light white--text">{{ org.desc }}</div>
                         </div>
                         
                         <div
                         v-else
-                        class="display-1 flex-grow-1 text-center ma-4"
+                        class="display-1 flex-grow-1 text-center font-weight-light ma-4"
                         >
                         {{ org.name }}
                             <div class="caption text--secondary">{{ org.desc }}</div>
@@ -43,16 +44,16 @@
 
         <v-item-group mandatory multiple>
             Collections
-            <v-row v-if="availableCollections.length">
+            <v-row v-if="collectionsSelectedOrg.length">
                 <v-col
-                v-for="collection in availableCollections"
+                v-for="collection in collectionsSelectedOrg"
                 :key="collection.id"
                 cols="12"
                 md="4"
                 >
                 <v-item :value="collection" v-slot="{ active, toggle }">
                     <v-card
-                    :color="active ? 'accent' : ''"
+                    :color="active ? 'primary' : ''"
                     class="d-flex align-center"
                     height="100"
                     @click="toggle"
@@ -60,7 +61,14 @@
                     <v-scroll-y-transition>
                         <div
                         v-if="active"
-                        class="display-1 flex-grow-1 text-center"
+                        class="display-1 flex-grow-1 text-center font-weight-light white--text"
+                        >
+                        {{ collection.name }}
+                            <div class="caption font-weight-light white--text">{{ collection.desc }}</div>
+                        </div>
+                        <div
+                        v-else
+                        class="display-1 flex-grow-1 text-center font-weight-light ma-4"
                         >
                         {{ collection.name }}
                             <div class="caption text--secondary">{{ collection.desc }}</div>
@@ -96,13 +104,21 @@ export default {
         availableOrgs: [],
         selectedCollections: [],
         availableCollections: [],
+        collectionsSelectedOrg: []
     }),
     mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));
         this.getOrgs();
         this.getCollections();
     },
-    computed: {},
+    watch: {
+        selectedOrg: {
+            immediate: true,
+            handler(org) {
+                this.collectionsSelectedOrg = this.availableCollections.filter(c => c.org.id == org.id)
+            }
+        }
+    },
     methods: {
         getOrgs() {
             fetch(BASE_API_URL+'/orgs', {

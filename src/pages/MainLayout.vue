@@ -8,7 +8,7 @@
       dense
     >
       <v-app-bar-nav-icon @click="toggleNav"></v-app-bar-nav-icon>
-      <v-toolbar-title class="font-weight-light">3deposit</v-toolbar-title>
+      <v-toolbar-title class="font-weight-light">3deposit | University of Illinois Library</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-col :cols=3>
         <v-text-field

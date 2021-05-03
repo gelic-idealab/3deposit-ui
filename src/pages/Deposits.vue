@@ -9,6 +9,7 @@
                 <v-col
                 v-for="org in availableOrgs"
                 :key="org.id"
+                cols="12"
                 md="4"
                 >
                 <v-item :value="org" v-slot="{ active, toggle }">

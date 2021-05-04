@@ -165,12 +165,14 @@ export default {
     selectedOrg: {},
     collections: [],
     selectedCollection: {},
+    items: [],
   }),
   mounted() {
     this.user = JSON.parse(localStorage.getItem('user'));
     this.getMetadata();
     this.getOrgs();
     this.getCollections();
+    this.getItems();
   },
   computed: {
     filterCollectionsByOrg() {
@@ -198,6 +200,27 @@ export default {
             console.log(res);
           }
 
+        });
+    },
+    getItems() {
+      fetch(BASE_API_URL+'/items', {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'X-API-KEY': this.user.token
+          }
+        })
+        .then(async response => {
+          if (response.status === 200) {
+            let res = await response.text();
+            this.items = JSON.parse(res);
+          } else if (response.status === 401) {
+            localStorage.removeItem('user');
+            this.$router.push('/login');
+          } else {
+            let res = await response.text();
+            console.log(res);
+          }
         });
     },
     getOrgs() {

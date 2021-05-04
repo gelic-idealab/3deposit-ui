@@ -61,12 +61,12 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item link @click="redirect('/create')">
+        <v-list-item link @click="redirect('/upload')">
           <v-list-item-icon>
-            <v-icon>mdi-plus</v-icon>
+            <v-icon>mdi-upload</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title>Create</v-list-item-title>
+            <v-list-item-title>Upload</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 

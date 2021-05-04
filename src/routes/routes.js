@@ -35,8 +35,8 @@ const routes = [
         component: Deposit,
       },
       {
-        path: "/create",
-        name: "Create",
+        path: "/upload",
+        name: "Upload",
         component: Upload,
       },
       {

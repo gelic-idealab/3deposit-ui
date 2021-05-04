@@ -4,6 +4,35 @@
     <v-row justify="end">
       <v-subheader>Uploading as {{ user.firstName + " " + user.lastName }} | {{ user.email }}</v-subheader>
     </v-row>
+
+    <v-row>
+      <v-col>
+        <v-select
+          v-model="selectedOrg"
+          :items="orgs"
+          menu-props="auto"
+          label="Select Organization"
+          prepend-icon="mdi-account-group"
+          item-text="name"
+          item-value="id"
+        ></v-select>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+        <v-select
+          v-model="selectedCollection"
+          :items="filterCollectionsByOrg"
+          menu-props="auto"
+          label="Select Collection"
+          prepend-icon="mdi-image-multiple"
+          item-text="name"
+          item-value="id"
+        ></v-select>
+      </v-col>
+    </v-row>
+
     <v-row>
       <v-col>
         Metadata
@@ -131,11 +160,25 @@ export default {
     ],
     form: new FormData(),
     uploading: false,
-    user: {}
+    user: {},
+    orgs: [],
+    selectedOrg: {},
+    collections: [],
+    selectedCollection: {},
   }),
   mounted() {
-      this.user = JSON.parse(localStorage.getItem('user'));
-
+    this.user = JSON.parse(localStorage.getItem('user'));
+    this.getMetadata();
+    this.getOrgs();
+    this.getCollections();
+  },
+  computed: {
+    filterCollectionsByOrg() {
+      return this.collections.filter((c) => { return c.org.id == this.selectedOrg });
+    }
+  },
+  methods: {
+    getMetadata() {
       fetch(BASE_API_URL+'/metadata', {
           method: 'GET',
           mode: 'cors',
@@ -156,8 +199,47 @@ export default {
           }
 
         });
-  },
-  methods: {
+    },
+    getOrgs() {
+      fetch(BASE_API_URL+'/orgs', {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+              'X-API-KEY': this.user.token
+          }
+      })
+      .then(async response => {
+          let res = await response.text();
+          if (response.status === 200) {
+              this.orgs = JSON.parse(res);
+          } else if (response.status === 401) {
+              localStorage.removeItem('user');
+              this.$router.push('/login');
+          } else {
+              console.log(res);
+          }
+      });
+    },
+    getCollections() {
+        fetch(BASE_API_URL+'/collections', {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'X-API-KEY': this.user.token
+            }
+        })
+        .then(async response => {
+            let res = await response.text();
+            if (response.status === 200) {
+                this.collections = JSON.parse(res);
+            } else if (response.status === 401) {
+                localStorage.removeItem('user');
+                this.$router.push('/login');
+            } else {
+                console.log(res);
+            }
+        });
+    },
     addDir(e) {
       console.log(e.target.files);
       e.target.files.forEach((file) => {

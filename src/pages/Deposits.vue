@@ -43,7 +43,7 @@
 
         <v-divider class="ma-4"></v-divider>
 
-        <v-item-group mandatory multiple>
+        <v-item-group mandatory multiple v-model="selectedCollections">
             Collections
             <v-row v-if="collectionsSelectedOrg.length">
                 <v-col
@@ -82,12 +82,21 @@
             <div class="caption ma-4" v-else>
                 No collections.
             </div> 
-    </v-item-group>
+        </v-item-group>
 
     <v-divider class="ma-4"></v-divider>
 
     <div>
         Items
+        <v-data-table
+        :headers="itemHeaders"
+        :items="itemsSelectedCols"
+        :sort-by="['id']"
+        >
+            <template v-slot:item.collection="{ item }">
+                <span>{{ item.collection.name || `None` }}</span>
+            </template>
+        </v-data-table>
     </div>
 
     </v-container>
@@ -105,18 +114,41 @@ export default {
         availableOrgs: [],
         selectedCollections: [],
         availableCollections: [],
-        collectionsSelectedOrg: []
+        collectionsSelectedOrg: [],
+        availableItems: [],
+        itemsSelectedCols: [],
+        itemHeaders: [
+            { text: "ID", value: "id" },
+            { text: "Name", value: "name" },
+            { text: "Description", value: "desc"},
+            { text: "Collection", value: "collection" },
+            { text: 'Actions', value: 'actions', sortable: false },
+        ],
     }),
     mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));
         this.getOrgs();
         this.getCollections();
+        this.getItems();
     },
     watch: {
         selectedOrg: {
             immediate: true,
             handler(org) {
                 this.collectionsSelectedOrg = this.availableCollections.filter(c => c.org.id == org.id)
+            }
+        },
+        collectionsSelectedOrg: {
+            immediate: true,
+            handler(cols) {
+                this.itemsSelectedCols = this.availableItems.filter(i => {
+                    let found = false;
+                    cols.forEach(c => {
+                        found = c.id == i.collection.id;
+                        if (found) return;
+                    });
+                    return found;
+                })
             }
         }
     },
@@ -153,6 +185,26 @@ export default {
                 let res = await response.text();
                 if (response.status === 200) {
                     this.availableCollections = JSON.parse(res);
+                } else if (response.status === 401) {
+                    localStorage.removeItem('user');
+                    this.$router.push('/login');
+                } else {
+                    console.log(res);
+                }
+            });
+        },
+        getItems() {
+            fetch(BASE_API_URL+'/items', {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'X-API-KEY': this.user.token
+                }
+            })
+            .then(async response => {
+                let res = await response.text();
+                if (response.status === 200) {
+                    this.availableItems = JSON.parse(res);
                 } else if (response.status === 401) {
                     localStorage.removeItem('user');
                     this.$router.push('/login');

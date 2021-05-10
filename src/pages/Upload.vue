@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    Create a New Deposit
+    Upload
     <v-row justify="end">
       <v-subheader>Uploading as {{ user.firstName + " " + user.lastName }} | {{ user.email }}</v-subheader>
     </v-row>
@@ -15,6 +15,7 @@
           prepend-icon="mdi-account-group"
           item-text="name"
           item-value="id"
+          @change="orgChanged"
         ></v-select>
       </v-col>
     </v-row>
@@ -27,6 +28,21 @@
           menu-props="auto"
           label="Select Collection"
           prepend-icon="mdi-image-multiple"
+          item-text="name"
+          item-value="id"
+          @change="colChanged"
+        ></v-select>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+        <v-select
+          v-model="selectedItem"
+          :items="filterItemsByCollection"
+          menu-props="auto"
+          label="Select Item"
+          prepend-icon="mdi-image"
           item-text="name"
           item-value="id"
         ></v-select>
@@ -166,6 +182,7 @@ export default {
     collections: [],
     selectedCollection: {},
     items: [],
+    selectedItem: {},
   }),
   mounted() {
     this.user = JSON.parse(localStorage.getItem('user'));
@@ -177,6 +194,9 @@ export default {
   computed: {
     filterCollectionsByOrg() {
       return this.collections.filter((c) => { return c.org.id == this.selectedOrg });
+    },
+    filterItemsByCollection() {
+      return this.items.filter((i) => { return i.collection.id == this.selectedCollection });
     }
   },
   methods: {
@@ -330,6 +350,13 @@ export default {
           field.value = '';
         });
       });
+    },
+    orgChanged() {
+      this.selectedCollection = {};
+      this.selectedItem = {};
+    },
+    colChanged() {
+      this.selectedItem = {};
     }
   }
 }

@@ -1,9 +1,10 @@
 <template>
   <v-container fluid>
     
+    <Users />
     <Orgs />
     <Collections />
-    <Users />
+    <Items />
 
   </v-container>
 </template>
@@ -12,6 +13,7 @@
 // import { BASE_API_URL } from "../requests/base";
 import Orgs from "../components/Orgs";
 import Collections from "../components/Collections";
+import Items from "../components/Items";
 import Users from "../components/Users";
 
 
@@ -20,7 +22,8 @@ export default {
     components: {
       Orgs,
       Collections,
-      Users
+      Users,
+      Items
     },
     data: () => ({
         data: {},

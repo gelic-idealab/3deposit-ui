@@ -240,6 +240,7 @@ export default {
                 .then(async response => {
                     this.uploading = false;
                     if (response.status == 200) {
+                        this.file = {};
                         this.close();
                     }                
                     let res = await response.text();

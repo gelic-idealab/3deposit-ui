@@ -137,6 +137,7 @@ export default {
                 { text: "Name", value: "name" },
                 { text: "Description", value: "desc"},
                 { text: "Item", value: "item" },
+                { text: "Filename", value: "filename"},
                 { text: "MD5", value: "md5"},
                 { text: "Size", value: "size"},
                 { text: "Type", value: "ext"},

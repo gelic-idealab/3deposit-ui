@@ -5,10 +5,17 @@
         :headers="headers"
         :items="data"
         :sort-by="['id']"
+        show-group-by
         >
-        <template v-slot:item.item="{ item }">
-           <span>{{ item.item.name || `None` }}</span>
-         </template>
+        <!-- <template v-slot:item.item="{ item }">
+            <span>{{ item.item.name || `None` }}</span>
+        </template>
+        <template v-slot:item.item.collection="{ item }">
+           <span>{{ item.item.collection.name || `None` }}</span>
+        </template>
+        <template v-slot:item.item.collection.org="{ item }">
+           <span>{{ item.item.collection.org.name || `None` }}</span>
+        </template> -->
         <template v-slot:top>
             <v-toolbar
                 flat
@@ -133,15 +140,17 @@ export default {
         return {
             data: [],
             headers: [
-                { text: "ID", value: "id" },
-                { text: "Name", value: "name" },
-                { text: "Description", value: "desc"},
-                { text: "Item", value: "item" },
-                { text: "Filename", value: "filename"},
-                { text: "MD5", value: "md5"},
-                { text: "Size", value: "size"},
+                { text: "ID", value: "id", groupable: false },
+                { text: "Name", value: "name", groupable: false },
+                { text: "Description", value: "desc", groupable: false },
+                { text: "Item", value: "item.name" },
+                { text: "Collection", value: "item.collection.name"},
+                { text: "Org", value: "item.collection.org.name"},
+                { text: "Filename", value: "filename", groupable: false },
+                { text: "MD5", value: "md5", groupable: false },
+                { text: "Size", value: "size",  groupable: false },
                 { text: "Type", value: "ext"},
-                { text: 'Actions', value: 'actions', sortable: false },
+                { text: 'Actions', value: 'actions', sortable: false, groupable: false },
             ],
             dialog: false,
             valid: true,

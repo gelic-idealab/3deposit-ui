@@ -92,10 +92,25 @@
         :headers="itemHeaders"
         :items="itemsSelectedCols"
         :sort-by="['id']"
+        show-expand
         >
-            <template v-slot:item.collection="{ item }">
-                <span>{{ item.collection.name || `None` }}</span>
-            </template>
+        <template v-slot:expanded-item="{ item }">
+                <v-list>
+                    <v-list-item-group>
+                        <v-list-item
+                        v-for="(file, i) in item.files"
+                        :key="i"
+                        >
+                        <v-list-item-icon>
+                            <v-icon v-text="file"></v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-title v-text="file"></v-list-item-title>
+                        </v-list-item-content>
+                        </v-list-item>
+                    </v-list-item-group>
+                </v-list>
+        </template>
         </v-data-table>
     </div>
 
@@ -121,9 +136,16 @@ export default {
             { text: "ID", value: "id" },
             { text: "Name", value: "name" },
             { text: "Description", value: "desc"},
-            { text: "Collection", value: "collection" },
+            { text: "Files", value: "files.length"},
+            { text: "Collection", value: "collection.name" },
             { text: 'Actions', value: 'actions', sortable: false },
         ],
+        fileHeaders: [
+            { text: "ID", value: "id" },
+            { text: "Name", value: "name" },
+            { text: "Description", value: "desc" },
+            { text: "Filename", value: "filename"}
+        ]
     }),
     mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));

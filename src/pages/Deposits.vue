@@ -45,9 +45,9 @@
 
         <v-item-group mandatory multiple v-model="selectedCollections">
             Collections
-            <v-row v-if="collectionsSelectedOrg.length">
+            <v-row v-if="filteredCollections.length">
                 <v-col
-                v-for="collection in collectionsSelectedOrg"
+                v-for="collection in filteredCollections"
                 :key="collection.id"
                 cols="12"
                 md="4"
@@ -90,7 +90,7 @@
         Items
         <v-data-table
         :headers="itemHeaders"
-        :items="itemsSelectedCols"
+        :items="filteredItems"
         :sort-by="['id']"
         show-expand
         >
@@ -153,25 +153,19 @@ export default {
         this.getCollections();
         this.getItems();
     },
-    watch: {
-        selectedOrg: {
-            immediate: true,
-            handler(org) {
-                this.collectionsSelectedOrg = this.availableCollections.filter(c => c.org.id == org.id)
-            }
+    computed: {
+        filteredCollections: function () {
+            return this.availableCollections.filter(c => c.org.id == this.selectedOrg.id)
         },
-        collectionsSelectedOrg: {
-            immediate: true,
-            handler(cols) {
-                this.itemsSelectedCols = this.availableItems.filter(i => {
-                    let found = false;
-                    cols.forEach(c => {
-                        found = c.id == i.collection.id;
-                        if (found) return;
-                    });
-                    return found;
-                })
-            }
+        filteredItems: function () {
+            return this.availableItems.filter(i => {
+                let found = false;
+                this.filteredCollections.forEach(c => {
+                    found = c.id == i.collection.id;
+                    if (found) return;
+                });
+                return found;
+            })
         }
     },
     methods: {

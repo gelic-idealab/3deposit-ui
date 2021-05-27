@@ -25,6 +25,7 @@
                     class="mb-2"
                     v-bind="attrs"
                     v-on="on"
+                    @click="getCollections"
                     >
                     Add Item
                     </v-btn>

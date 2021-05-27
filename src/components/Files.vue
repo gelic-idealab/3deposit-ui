@@ -77,8 +77,8 @@
                             </v-col>
                             <v-col cols="12">
                                 <v-select
-                                v-model="editedItem.item"
-                                label="Item"
+                                v-model="editedItem.entity"
+                                label="Entity"
                                 item-text="name"
                                 item-value="id"
                                 :items="items"
@@ -144,9 +144,10 @@ export default {
                 { text: "ID", value: "id", groupable: false },
                 { text: "Name", value: "name", groupable: false },
                 { text: "Description", value: "desc", groupable: false },
-                { text: "Item", value: "item.name" },
-                { text: "Collection", value: "item.collection.name"},
-                { text: "Org", value: "item.collection.org.name"},
+                { text: "Entity", value: "entity.name" },
+                { text: "Item", value: "entity.item.name"},
+                { text: "Collection", value: "entity.item.collection.name"},
+                { text: "Org", value: "entity.item.collection.org.name"},
                 { text: "Filename", value: "filename", groupable: false },
                 { text: "MD5", value: "md5", groupable: false },
                 { text: "Size", value: "size",  groupable: false },
@@ -162,19 +163,19 @@ export default {
             editedItem: {
                 name: "",
                 desc: "",
-                item: ""
+                entity: ""
             },
             editedIndex: -1,
             uploading: false,
             file: {},
-            items: [],
+            entities: [],
             user: {},
         }
     },
     mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));
         this.getFiles();
-        this.getItems();
+        this.getEntities();
     },
     computed: {
       formTitle () {
@@ -211,8 +212,8 @@ export default {
                 }
             });
         },
-        getItems() {
-            fetch(BASE_API_URL+'/items', {
+        getEntities() {
+            fetch(BASE_API_URL+'/entities', {
                 method: 'GET',
                 mode: 'cors',
                 headers: {
@@ -222,7 +223,7 @@ export default {
             .then(async response => {
                 let res = await response.text();
                 if (response.status === 200) {
-                    this.items = JSON.parse(res);
+                    this.entities = JSON.parse(res);
                 } else if (response.status === 401) {
                     localStorage.removeItem('user');
                     this.$router.push('/login');

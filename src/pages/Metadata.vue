@@ -61,6 +61,15 @@
                     >
                         <v-row>
                         <v-col cols="12">
+                            <v-select
+                            v-model="editedItem.scope"
+                            label="Scope"
+                            required
+                            :rules="rules"
+                            :items="scopeItems"
+                            ></v-select>
+                        </v-col>
+                        <v-col cols="12">
                             <v-text-field
                             v-model="editedItem.label"
                             label="Label"
@@ -142,6 +151,7 @@ export default {
         { text: "Label", value: "label" },
         { text: "Schema", value: "schema"},
         { text: "Tag", value: "tag" },
+        { text: "Scope", value: "scope"},
         { text: "Note", value: "note" },
         { text: "Required", value: "required" },
         { text: "Actions", value: "actions", sortable: false },
@@ -156,6 +166,7 @@ export default {
             note: "",
             required: false,
         },
+        scopeItems: ["Collection", "Item", "Entity", "File"],
         editedIndex: -1,
         rules: [
             v => !!v || 'Value is required',

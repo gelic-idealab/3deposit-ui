@@ -1,13 +1,13 @@
 <template>
     <v-container fluid>
-        Organizations      
+        Entities      
         <v-data-table
         :headers="headers"
         :items="data"
         :sort-by="['id']"
         >
-        <template v-slot:item.owners="{ item }">
-           <span>{{ item.owners.length || 0 }}</span>
+        <template v-slot:item.item="{ item }">
+           <span>{{ item.item.name || `None` }}</span>
          </template>
         <template v-slot:top>
             <v-toolbar
@@ -25,9 +25,9 @@
                     class="mb-2"
                     v-bind="attrs"
                     v-on="on"
-                    @click="getUsers"
+                    @click="getItems"
                     >
-                    Add Organization
+                    Add Entity
                     </v-btn>
                 </template>
                 <v-card>
@@ -61,12 +61,11 @@
                             </v-col>
                             <v-col cols="12">
                                 <v-select
-                                multiple
-                                v-model="editedItem.owners"
-                                label="Owners"
-                                item-text="email"
+                                v-model="editedItem.item"
+                                label="Item"
+                                item-text="name"
                                 item-value="id"
-                                :items="users"
+                                :items="items"
                                 required
                                 :rules="rules"
                                 ></v-select>
@@ -120,7 +119,7 @@
 import { BASE_API_URL } from "../requests/base";
 
 export default {
-    name: 'Orgs',
+    name: 'Entities',
 
     data: function() {
         return {
@@ -129,7 +128,7 @@ export default {
                 { text: "ID", value: "id" },
                 { text: "Name", value: "name" },
                 { text: "Description", value: "desc"},
-                { text: "Owners", value: "owners" },
+                { text: "Item", value: "item" },
                 { text: 'Actions', value: 'actions', sortable: false },
             ],
             dialog: false,
@@ -141,21 +140,21 @@ export default {
             editedItem: {
                 name: "",
                 desc: "",
-                owners: []
+                item: ""
             },
             editedIndex: -1,
-            users: [],
+            items: [],
             user: {},
         }
     },
     mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));
-        this.getUsers();
-        this.getOrgs();
+        this.getEntities();
+        this.getItems();
     },
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'New Organization' : 'Edit Organization'
+        return this.editedIndex === -1 ? 'New Entity' : 'Edit Entity'
       },
     },
 
@@ -165,8 +164,8 @@ export default {
       },
     },
     methods: {
-        getUsers() {
-            fetch(BASE_API_URL+'/users', {
+        getItems() {
+            fetch(BASE_API_URL+'/items', {
                 method: 'GET',
                 mode: 'cors',
                 headers: {
@@ -176,7 +175,7 @@ export default {
             .then(async response => {
                 let res = await response.text();
                 if (response.status === 200) {
-                    this.users = JSON.parse(res);
+                    this.items = JSON.parse(res);
                 } else if (response.status === 401) {
                     localStorage.removeItem('user');
                     this.$router.push('/login');
@@ -185,8 +184,8 @@ export default {
                 }
             });
         },
-        getOrgs() {
-            fetch(BASE_API_URL+'/orgs', {
+        getEntities() {
+            fetch(BASE_API_URL+'/entities', {
                 method: 'GET',
                 mode: 'cors',
                 headers: {
@@ -212,7 +211,7 @@ export default {
                     form.append(key, value);
                 }
 
-                fetch(BASE_API_URL+'/orgs', {
+                fetch(BASE_API_URL+'/entities', {
                     method: 'POST',
                     mode: 'cors',
                     body: form,
@@ -226,7 +225,7 @@ export default {
                     }                
                     let res = await response.text();
                     console.log(res);
-                    this.getOrgs();
+                    this.getEntities();
                 });
             } 
         },
@@ -235,9 +234,9 @@ export default {
             this.editedItem = Object.assign({}, item)
             this.dialog = true
         },
-        deleteItem(item) {
-            if (confirm('Are you sure you want to delete this organization?')) {
-                fetch(BASE_API_URL+'/orgs?id='+item.id, {
+        deleteItem (item) {
+            if (confirm('Are you sure you want to delete this entity?')) {
+                fetch(BASE_API_URL+'/entities?id='+item.id, {
                     method: 'DELETE',
                     mode: 'cors',
                     headers: {
@@ -247,11 +246,11 @@ export default {
                 .then(async response => {
                     let res = await response.text();
                     console.log(res);
-                    this.getOrgs();
+                    this.getEntities();
                 });
             }
         },
-        close() {
+        close () {
             this.dialog = false;
             this.$refs.form.resetValidation();
             this.$nextTick(() => {

@@ -5,6 +5,7 @@
     <Orgs />
     <Collections />
     <Items />
+    <Entities />
     <Files />
 
   </v-container>
@@ -17,6 +18,7 @@ import Collections from "../components/Collections";
 import Items from "../components/Items";
 import Users from "../components/Users";
 import Files from "../components/Files";
+import Entities from "../components/Entities";
 
 
 export default {
@@ -26,7 +28,8 @@ export default {
       Collections,
       Users,
       Items,
-      Files
+      Files,
+      Entities
     },
     data: () => ({
         data: {},

@@ -7,15 +7,6 @@
         :sort-by="['id']"
         show-group-by
         >
-        <!-- <template v-slot:item.item="{ item }">
-            <span>{{ item.item.name || `None` }}</span>
-        </template>
-        <template v-slot:item.item.collection="{ item }">
-           <span>{{ item.item.collection.name || `None` }}</span>
-        </template>
-        <template v-slot:item.item.collection.org="{ item }">
-           <span>{{ item.item.collection.org.name || `None` }}</span>
-        </template> -->
         <template v-slot:top>
             <v-toolbar
                 flat
@@ -32,7 +23,7 @@
                     class="mb-2"
                     v-bind="attrs"
                     v-on="on"
-                    @click="getItems"
+                    @click="getEntities"
                     >
                     Add File
                     </v-btn>
@@ -81,7 +72,7 @@
                                 label="Entity"
                                 item-text="name"
                                 item-value="id"
-                                :items="items"
+                                :items="entities"
                                 required
                                 :rules="rules"
                                 ></v-select>

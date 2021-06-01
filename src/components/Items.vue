@@ -63,7 +63,7 @@
                                 <v-select
                                 v-model="editedItem.collection"
                                 label="Collection"
-                                item-text="name"
+                                :item-text="formatCollectionText"
                                 item-value="id"
                                 :items="collections"
                                 required
@@ -164,6 +164,9 @@ export default {
       },
     },
     methods: {
+        formatCollectionText(collection) {
+            return `${collection.name} | ${collection.org.name}`
+        },
         getItems() {
             fetch(BASE_API_URL+'/items', {
                 method: 'GET',

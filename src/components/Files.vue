@@ -70,7 +70,7 @@
                                 <v-select
                                 v-model="editedItem.entity"
                                 label="Entity"
-                                item-text="name"
+                                :item-text="formatEntityText"
                                 item-value="id"
                                 :items="entities"
                                 required
@@ -180,6 +180,9 @@ export default {
       },
     },
     methods: {
+        formatEntityText(entity) {
+            return `${entity.name} | ${entity.item.name} | ${entity.item.collection.name} | ${entity.item.collection.org.name}`
+        },
         useFileName(){
             this.editedItem.name = this.file.name;
         },

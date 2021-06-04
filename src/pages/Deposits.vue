@@ -86,7 +86,7 @@
 
     <v-divider class="ma-4"></v-divider>
 
-    <div>
+    <!-- <div>
         Items
         <v-data-table
         :headers="itemHeaders"
@@ -112,7 +112,66 @@
                 </v-list>
         </template>
         </v-data-table>
-    </div>
+    </div> -->
+
+    <v-container fluid>
+      <v-row dense>
+        <v-col
+          v-for="item in filteredItems"
+          :key="item.id"
+          cols="3"
+        >
+          <v-card>
+            <v-card-title v-text="item.name"></v-card-title>
+            <v-card-subtitle>{{ item.collection.name }}</v-card-subtitle>
+            <v-card-text>
+                <div class="text--primary">
+                    {{ item.desc  }}
+                </div>
+            </v-card-text>
+            <v-container fluid>
+                <v-row dense>
+                    <v-col
+                    v-for="entity in item.entities"
+                    :key="entity.id"
+                    cols="6"
+                    >
+                        <v-card>
+                            <!-- <v-img
+                            src="@/assets/empty.png"
+                            >
+                            </v-img> -->
+                            <v-card-title class="text-subtitle-1">
+                                {{ entity.name }}
+                            </v-card-title>
+                            <v-card-subtitle class="text-subtitle-2">
+                                {{ entity.desc }}
+                            </v-card-subtitle>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-container>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+
+              <v-btn icon>
+                <v-icon>mdi-heart</v-icon>
+              </v-btn>
+
+              <v-btn icon>
+                <v-icon>mdi-bookmark</v-icon>
+              </v-btn>
+
+              <v-btn icon>
+                <v-icon>mdi-share-variant</v-icon>
+              </v-btn>
+            </v-card-actions>
+
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
 
     </v-container>
 </template>
@@ -132,20 +191,6 @@ export default {
         collectionsSelectedOrg: [],
         availableItems: [],
         itemsSelectedCols: [],
-        itemHeaders: [
-            { text: "ID", value: "id" },
-            { text: "Name", value: "name" },
-            { text: "Description", value: "desc"},
-            { text: "Files", value: "files.length"},
-            { text: "Collection", value: "collection.name" },
-            { text: 'Actions', value: 'actions', sortable: false },
-        ],
-        fileHeaders: [
-            { text: "ID", value: "id" },
-            { text: "Name", value: "name" },
-            { text: "Description", value: "desc" },
-            { text: "Filename", value: "filename"}
-        ]
     }),
     mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));
@@ -158,14 +203,12 @@ export default {
             return this.availableCollections.filter(c => c.org.id == this.selectedOrg.id)
         },
         filteredItems: function () {
-            return this.availableItems.filter(i => {
-                let found = false;
-                this.filteredCollections.forEach(c => {
-                    found = c.id == i.collection.id;
-                    if (found) return;
-                });
-                return found;
-            })
+            let items = [];
+            let cids = this.selectedCollections.map(c => c.id);
+            this.availableItems.forEach((i) => {
+                if (cids.includes(i.collection.id)) items.push(i);
+            });
+            return items;
         }
     },
     methods: {

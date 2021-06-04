@@ -6,9 +6,9 @@
         :items="data"
         :sort-by="['id']"
         >
-        <!-- <template v-slot:item.upload_at="{ item }">
-           <span>{{ new Date(item.upload_at*1000).toLocaleString() }}</span>
-         </template> -->
+        <template v-slot:item.lastLogin="{ item }">
+           <span>{{ new Date(item.lastLogin).toLocaleString() }}</span>
+         </template>
         <template v-slot:top>
             <v-toolbar
                 flat

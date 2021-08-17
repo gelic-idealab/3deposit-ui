@@ -45,6 +45,21 @@
           prepend-icon="mdi-image"
           item-text="name"
           item-value="id"
+          @change="itemChanged"
+        ></v-select>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+        <v-select
+          v-model="selectedEntity"
+          :items="filterEntitiesByItem"
+          menu-props="auto"
+          label="Select Entity"
+          prepend-icon="mdi-image"
+          item-text="name"
+          item-value="id"
         ></v-select>
       </v-col>
     </v-row>
@@ -54,12 +69,6 @@
         Metadata
         <template>
         <v-form>
-          <template v-for="field in fields">
-            <v-text-field dense v-if="field.type == `text`" :key="field.id" :label="field.label" v-model="field.value" :counter=25></v-text-field>
-            <v-textarea dense v-if="field.type == 'textarea'" :key="field.id" :label="field.label" v-model="field.value" :counter=2000></v-textarea>
-            <v-select v-else-if="field.type == `select`" :key="field.id" :label="field.label" v-model="field.value" :items="field.items"></v-select>
-          </template>
-
           <template v-for="field in descriptiveMetadataFields">
             <v-text-field
               v-if="field.required == 0"
@@ -126,43 +135,6 @@ export default {
 
   data: () => ({
     BASE_API_URL: "http://localhost:8081",
-    fields: [
-      {
-        id: 'deposit_type',
-        label: 'Media Type',
-        type: 'select',
-        required: true,
-        items: [
-          {
-            text: '3D Scan or Model', 
-            value: 'model'
-          },
-          {
-            text: '360 Video', 
-            value: 'video'
-          },
-          {
-            text: 'Virtual Reality Application',
-            value: 'vr'
-          }
-        ],
-        value: ''
-      },
-      {
-        id: 'deposit_name',
-        label: 'Project Name',
-        type: 'text',
-        required: true,
-        value: ''
-      },
-      {
-        id: 'deposit_desc',
-        label: 'Project Description',
-        type: 'textarea',
-        required: true,
-        value: ''
-      }
-    ],
     descriptiveMetadataFields: [],
     files: [],
     file: [],
@@ -183,6 +155,8 @@ export default {
     selectedCollection: {},
     items: [],
     selectedItem: {},
+    entities: [],
+    selectedEntity: {}
   }),
   mounted() {
     this.user = JSON.parse(localStorage.getItem('user'));
@@ -190,6 +164,7 @@ export default {
     this.getOrgs();
     this.getCollections();
     this.getItems();
+    this.getEntities();
   },
   computed: {
     filterCollectionsByOrg() {
@@ -197,6 +172,9 @@ export default {
     },
     filterItemsByCollection() {
       return this.items.filter((i) => { return i.collection.id == this.selectedCollection });
+    },
+    filterEntitiesByItem() {
+      return this.entities.filter((i) => { return i.item.id == this.selectedItem });
     }
   },
   methods: {
@@ -220,6 +198,27 @@ export default {
             console.log(res);
           }
 
+        });
+    },
+    getEntities() {
+      fetch(BASE_API_URL+'/entities', {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            'X-API-KEY': this.user.token
+          }
+        })
+        .then(async response => {
+          if (response.status === 200) {
+            let res = await response.text();
+            this.entities = JSON.parse(res);
+          } else if (response.status === 401) {
+            localStorage.removeItem('user');
+            this.$router.push('/login');
+          } else {
+            let res = await response.text();
+            console.log(res);
+          }
         });
     },
     getItems() {
@@ -313,9 +312,6 @@ export default {
     },
     submit() {
       this.uploading = true;
-      this.fields.forEach((field) => {
-        this.form.append(field.id, field.value)
-      });
       this.descriptiveMetadataFields.forEach(field => {
         if (field.value.value != "") {
           this.form.append(field.id, JSON.stringify(field));
@@ -357,6 +353,9 @@ export default {
     },
     colChanged() {
       this.selectedItem = {};
+    },
+    itemChanged() {
+      this.selectedEntity = {};
     }
   }
 }

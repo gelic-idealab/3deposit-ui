@@ -52,10 +52,10 @@ export default {
     },
     methods: {
       getIcon(target) {
-        if (target == "models") return "mdi-cube";
-        if (target == "videos") return "mdi-video";
-        if (target == "vr") return "mdi-virtual-reality";
-        if (target == "total") return "mdi-upload";
+        if (target == "collections") return "mdi-image-multiple";
+        if (target == "items") return "mdi-image";
+        if (target == "entities") return "mdi-cube";
+        if (target == "files") return "mdi-file";
         if (target == "size") return "mdi-harddisk";
         return "mdi-square-outline"
       },

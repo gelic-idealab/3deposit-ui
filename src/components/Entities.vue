@@ -1,14 +1,13 @@
 <template>
     <v-container fluid>
-        Files      
+        Entities      
         <v-data-table
         :headers="headers"
         :items="data"
         :sort-by="['id']"
-        show-group-by
         >
-        <template v-slot:item.entity="{ item }">
-           <span>{{ item.entity.name || `None` }}</span>
+        <template v-slot:item.item="{ item }">
+           <span>{{ item.item.name || `None` }}</span>
          </template>
         <template v-slot:top>
             <v-toolbar
@@ -26,9 +25,9 @@
                     class="mb-2"
                     v-bind="attrs"
                     v-on="on"
-                    @click="getEntities"
+                    @click="getItems"
                     >
-                    Add File
+                    Add Entity
                     </v-btn>
                 </template>
                 <v-card>
@@ -44,15 +43,6 @@
                         lazy-validation
                         >
                             <v-row>
-                            <v-col>
-                                <v-file-input
-                                show-size
-                                :loading="uploading" 
-                                v-model="file" 
-                                label="Add file(s)"
-                                @change="useFileName"
-                                ></v-file-input>
-                            </v-col>
                             <v-col cols="12">
                                 <v-text-field
                                 v-model="editedItem.name"
@@ -71,11 +61,11 @@
                             </v-col>
                             <v-col cols="12">
                                 <v-select
-                                v-model="editedItem.entity"
-                                label="Entity"
+                                v-model="editedItem.item"
+                                label="Item"
                                 item-text="name"
                                 item-value="id"
-                                :items="entities"
+                                :items="items"
                                 required
                                 :rules="rules"
                                 ></v-select>
@@ -129,24 +119,17 @@
 import { BASE_API_URL } from "../requests/base";
 
 export default {
-    name: 'Files',
+    name: 'Entities',
 
     data: function() {
         return {
             data: [],
             headers: [
-                { text: "ID", value: "id", groupable: false },
-                { text: "Name", value: "name", groupable: false },
-                { text: "Description", value: "desc", groupable: false },
-                { text: "Entity", value: "entity.name" },
-                { text: "Item", value: "entity.item.name"},
-                { text: "Collection", value: "entity.item.collection.name"},
-                { text: "Org", value: "entity.item.collection.org.name"},
-                { text: "Filename", value: "filename", groupable: false },
-                { text: "MD5", value: "md5", groupable: false },
-                { text: "Size", value: "size",  groupable: false },
-                { text: "Type", value: "ext"},
-                { text: 'Actions', value: 'actions', sortable: false, groupable: false },
+                { text: "ID", value: "id" },
+                { text: "Name", value: "name" },
+                { text: "Description", value: "desc"},
+                { text: "Item", value: "item" },
+                { text: 'Actions', value: 'actions', sortable: false },
             ],
             dialog: false,
             valid: true,
@@ -157,23 +140,21 @@ export default {
             editedItem: {
                 name: "",
                 desc: "",
-                entity: ""
+                item: ""
             },
             editedIndex: -1,
-            uploading: false,
-            file: {},
-            entities: [],
+            items: [],
             user: {},
         }
     },
     mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));
-        this.getFiles();
         this.getEntities();
+        this.getItems();
     },
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'New File' : 'Edit File'
+        return this.editedIndex === -1 ? 'New Entity' : 'Edit Entity'
       },
     },
 
@@ -183,11 +164,8 @@ export default {
       },
     },
     methods: {
-        useFileName(){
-            this.editedItem.name = this.file.name;
-        },
-        getFiles() {
-            fetch(BASE_API_URL+'/files', {
+        getItems() {
+            fetch(BASE_API_URL+'/items', {
                 method: 'GET',
                 mode: 'cors',
                 headers: {
@@ -197,7 +175,7 @@ export default {
             .then(async response => {
                 let res = await response.text();
                 if (response.status === 200) {
-                    this.data = JSON.parse(res);
+                    this.items = JSON.parse(res);
                 } else if (response.status === 401) {
                     localStorage.removeItem('user');
                     this.$router.push('/login');
@@ -217,7 +195,7 @@ export default {
             .then(async response => {
                 let res = await response.text();
                 if (response.status === 200) {
-                    this.entities = JSON.parse(res);
+                    this.data = JSON.parse(res);
                 } else if (response.status === 401) {
                     localStorage.removeItem('user');
                     this.$router.push('/login');
@@ -228,14 +206,12 @@ export default {
         },
         save() {
             if (this.$refs.form.validate()) {
-                this.uploading = true;
                 let form = new FormData();
                 for (const [key, value] of Object.entries(this.editedItem)) {
                     form.append(key, value);
                 }
-                form.append('file', this.file);
 
-                fetch(BASE_API_URL+'/files', {
+                fetch(BASE_API_URL+'/entities', {
                     method: 'POST',
                     mode: 'cors',
                     body: form,
@@ -244,14 +220,12 @@ export default {
                     }
                 })
                 .then(async response => {
-                    this.uploading = false;
                     if (response.status == 200) {
-                        this.file = {};
                         this.close();
                     }                
                     let res = await response.text();
                     console.log(res);
-                    this.getFiles();
+                    this.getEntities();
                 });
             } 
         },
@@ -261,8 +235,8 @@ export default {
             this.dialog = true
         },
         deleteItem (item) {
-            if (confirm('Are you sure you want to delete this file?')) {
-                fetch(BASE_API_URL+'/files?id='+item.id, {
+            if (confirm('Are you sure you want to delete this entity?')) {
+                fetch(BASE_API_URL+'/entities?id='+item.id, {
                     method: 'DELETE',
                     mode: 'cors',
                     headers: {
@@ -272,7 +246,7 @@ export default {
                 .then(async response => {
                     let res = await response.text();
                     console.log(res);
-                    this.getFiles();
+                    this.getEntities();
                 });
             }
         },

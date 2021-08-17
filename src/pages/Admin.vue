@@ -5,6 +5,7 @@
     <Orgs />
     <Collections />
     <Items />
+    <Entities />
     <Files />
 
   </v-container>
@@ -15,9 +16,9 @@
 import Orgs from "../components/Orgs";
 import Collections from "../components/Collections";
 import Items from "../components/Items";
-import Users from "../components/Users";
+import Entities from "../components/Entities";
 import Files from "../components/Files";
-
+import Users from "../components/Users";
 
 export default {
     name: 'Admin',
@@ -26,6 +27,7 @@ export default {
       Collections,
       Users,
       Items,
+      Entities,
       Files
     },
     data: () => ({

@@ -90,6 +90,17 @@
                                 :rules="rules"
                                 ></v-select>
                             </v-col>
+                            <v-col cols="12">
+                                <v-select
+                                v-model="editedItem.org"
+                                label="Organization"
+                                :items="orgs"
+                                item-text="name"
+                                item-value="id"
+                                required
+                                :rules="rules"
+                                ></v-select>
+                            </v-col>
                             </v-row>
                         </v-form>
                     </v-container>
@@ -169,16 +180,19 @@ export default {
                 passwordConfirm: "",
                 firstName: "",
                 lastName: "",
-                role: ""
+                role: "",
+                org: ""
             },
             editedIndex: -1,
-            roles: ["admin", "manager", "uploader", "viewer"],
+            roles: ["admin", "manager", "user"],
             user: {},
+            orgs: []
         }
     },
     mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));
         this.getUsers();
+        this.getOrgs();
     },
     computed: {
       formTitle () {
@@ -204,6 +218,26 @@ export default {
                 let res = await response.text();
                 if (response.status === 200) {
                     this.data = JSON.parse(res);
+                } else if (response.status === 401) {
+                    localStorage.removeItem('user');
+                    this.$router.push('/login');
+                } else {
+                    console.log(res);
+                }
+            });
+        },
+        getOrgs() {
+            fetch(BASE_API_URL+'/orgs', {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'X-API-KEY': this.user.token
+                }
+            })
+            .then(async response => {
+                let res = await response.text();
+                if (response.status === 200) {
+                    this.orgs = JSON.parse(res);
                 } else if (response.status === 401) {
                     localStorage.removeItem('user');
                     this.$router.push('/login');

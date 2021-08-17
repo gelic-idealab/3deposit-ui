@@ -116,7 +116,7 @@ export default {
             .then(async response => {
                 if (response.status == 200) {
                     let res = await response.text();
-                    console.log('successful login', res);
+                    console.log('successful login.');
                     localStorage.setItem('user', res);
                     setTimeout(() => {
                         this.$router.push('/');
